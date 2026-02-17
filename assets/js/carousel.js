@@ -1,38 +1,43 @@
-function initCarousel() {
+/* ===================================
+   PREMIUM MULTI CAROUSEL ENGINE
+   - Desktop: autoplay
+   - Mobile: swipe only
+   - Multiple instances safe
+=================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
 
   const carousels = document.querySelectorAll(".carousel");
 
-  if (!carousels.length) return;
-
-  carousels.forEach(carousel => {
+  carousels.forEach((carousel) => {
 
     const track = carousel.querySelector(".carousel-track");
     const slides = carousel.querySelectorAll(".carousel-slide");
+    const dotsContainer = carousel.querySelector(".carousel-dots");
 
-    // 🔒 Protección absoluta
-    if (!track || !slides.length) return;
+    if (!track || slides.length === 0 || !dotsContainer) return;
 
     let index = 0;
-    const total = slides.length;
     let interval = null;
+    const total = slides.length;
 
     /* ==============================
-       CREAR DOTS
+       DEVICE DETECTION
     ============================== */
 
-    let dotsContainer = carousel.querySelector(".carousel-dots");
-
-    if (!dotsContainer) {
-      dotsContainer = document.createElement("div");
-      dotsContainer.className = "carousel-dots";
-      carousel.appendChild(dotsContainer);
+    function isDesktop() {
+      return window.matchMedia("(min-width: 769px)").matches;
     }
+
+    /* ==============================
+       CREATE DOTS
+    ============================== */
 
     dotsContainer.innerHTML = "";
 
     slides.forEach((_, i) => {
       const dot = document.createElement("div");
-      dot.className = "carousel-dot";
+      dot.classList.add("carousel-dot");
       if (i === 0) dot.classList.add("active");
 
       dot.addEventListener("click", () => {
@@ -46,11 +51,10 @@ function initCarousel() {
     const dots = dotsContainer.querySelectorAll(".carousel-dot");
 
     /* ==============================
-       UPDATE
+       UPDATE FUNCTION
     ============================== */
 
     function update() {
-
       if (index >= total) index = 0;
       if (index < 0) index = total - 1;
 
@@ -61,11 +65,20 @@ function initCarousel() {
     }
 
     /* ==============================
-       AUTOPLAY DESKTOP ONLY
+       AUTOPLAY CONTROL
     ============================== */
 
+    function stopAuto() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
     function startAuto() {
-      if (window.innerWidth <= 768) return;
+      if (!isDesktop()) return;
+
+      stopAuto();
 
       interval = setInterval(() => {
         index = (index + 1) % total;
@@ -73,56 +86,78 @@ function initCarousel() {
       }, 4000);
     }
 
-    function stopAuto() {
-      if (interval) clearInterval(interval);
-    }
-
     /* ==============================
        INTERSECTION OBSERVER
-       (NO MÁS SALTO EN MOBILE)
+       (prevents scroll jump)
     ============================== */
 
     const observer = new IntersectionObserver(entries => {
-
       entries.forEach(entry => {
-
         if (!entry.isIntersecting) {
           stopAuto();
         } else {
-          stopAuto();
-          startAuto();
+          if (isDesktop()) startAuto();
         }
-
       });
-
-    }, { threshold: .4 });
+    }, { threshold: 0.4 });
 
     observer.observe(carousel);
 
     /* ==============================
-       SWIPE MOBILE
+       SWIPE SUPPORT (Mobile)
     ============================== */
 
     let startX = 0;
+    let isDragging = false;
 
-    carousel.addEventListener("touchstart", e => {
+    track.addEventListener("touchstart", (e) => {
       startX = e.touches[0].clientX;
+      isDragging = true;
       stopAuto();
     });
 
-    carousel.addEventListener("touchend", e => {
-      const endX = e.changedTouches[0].clientX;
-      const diff = startX - endX;
+    track.addEventListener("touchmove", (e) => {
+      if (!isDragging) return;
+    });
+
+    track.addEventListener("touchend", (e) => {
+      if (!isDragging) return;
+
+      const diff = e.changedTouches[0].clientX - startX;
 
       if (Math.abs(diff) > 50) {
-        if (diff > 0) index++;
-        else index--;
-        update();
+        if (diff > 0) {
+          index--;
+        } else {
+          index++;
+        }
       }
 
-      startAuto();
+      update();
+      isDragging = false;
+
+      if (isDesktop()) startAuto();
     });
+
+    /* ==============================
+       RESIZE LISTENER
+    ============================== */
+
+    window.addEventListener("resize", () => {
+      if (!isDesktop()) {
+        stopAuto();
+      } else {
+        startAuto();
+      }
+    });
+
+    /* ==============================
+       INITIAL STATE
+    ============================== */
+
+    update();
+    if (isDesktop()) startAuto();
 
   });
 
-}
+});
