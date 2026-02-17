@@ -43,9 +43,9 @@
         "fade": true,
         "dots": true,
         "items": [
-          "/assets/images/carruselA1.png",
-          "/assets/images/carruselA2.png",
-          "/assets/images/carruselA3.png"
+          "assets/images/carruselA1.png",
+          "assets/images/carruselA2.png",
+          "assets/images/carruselA3.png"
         ]
       },
       "quote": {
