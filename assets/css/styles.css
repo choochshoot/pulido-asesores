@@ -149,7 +149,10 @@ section{
   overflow:hidden;
   margin-top:2rem;
   border-radius:12px;
+
+  aspect-ratio: 16 / 9; /* 👈 AGREGAR ESTA LÍNEA */
 }
+
 
 .carousel-track{
   display:flex;
@@ -167,11 +170,12 @@ section{
 
 .carousel img{
   width:100%;
-  height:auto;
+  height:100%; /* 👈 cambiar de auto a 100% */
   display:block;
   border-radius:12px;
   object-fit:cover;
 }
+
 
 .carousel-dots{
   display:flex;
