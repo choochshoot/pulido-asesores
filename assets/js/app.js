@@ -209,7 +209,6 @@ if (section.lotties?.enabled && section.lotties.items?.length) {
   });
 
   // 🔹 Inicializar componentes dinámicos
-  if (typeof initCarousel === "function") initCarousel();
   if (typeof initLotties === "function") initLotties();
 
   activateReveal();
