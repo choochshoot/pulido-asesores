@@ -13,7 +13,6 @@
     "email": "contacto@pulidoasesores.com",
     "address": "Ciudad de México, México",
     "mapEmbed": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.6184761185514!2d-99.16423178823796!3d19.428883740722025!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff33846b3299%3A0x1fd31328356b921e!2sReforma%20222!5e0!3m2!1ses!2smx!4v1771298610470!5m2!1ses!2smx"
-
   },
   "hero": {
     "enabled": true,
@@ -30,42 +29,6 @@
     }
   },
   "sections": [
-    {
-      "enabled": true,
-      "id": "intro",
-      "type": "content",
-      "title": "Acompañamos decisiones críticas",
-      "text": "Auditoría y aseguramiento con visión estratégica, experiencia técnica y acompañamiento cercano.",
-      "images": {
-        "enabled": true,
-        "autoplay": true,
-        "interval": 5000,
-        "fade": true,
-        "dots": true,
-        "items": [
-          "assets/images/carruselA1.png",
-          "assets/images/carruselA2.png",
-          "assets/images/carruselA3.png"
-        ]
-      },
-      "quote": {
-        "enabled": true,
-        "text": "El control no limita, fortalece.",
-        "author": "Pulido Asesores"
-      },
-      "lotties": {
-        "enabled": false,
-        "items": []
-      },
-      "map": {
-        "enabled": false
-      },
-      "cta": {
-        "enabled": true,
-        "text": "Conocer Servicios",
-        "url": "https://wa.me/525668550117"
-      }
-    },
     {
       "enabled": true,
       "id": "ubicacion",
@@ -126,68 +89,6 @@
         "enabled": true,
         "text": "Descargar Brochure",
         "url": "https://choochshoot.github.io/brochure-offset/"
-      }
-    },
-    {
-      "enabled": true,
-      "id": "varioservicios",
-      "type": "services",
-      "title": "Servicios Especializados",
-      "text": [
-  "Asistencia técnica en tributación empresarial y fiscalidad corporativa",
-  "Servicios de asesoramiento en fiscalidad global y tributación internacional",
-  "Monitoreo y verificación del cumplimiento de obligaciones tributarias",
-  "Análisis y documentación de operaciones vinculadas (precios de transferencia)",
-  "Procesos de reestructuración empresarial: fusiones, adquisiciones y auditorías legales (M&A y Due Diligence)",
-  "Gestión de aspectos laborales-fiscales: seguridad social y remuneraciones",
-  "Asesoría en operaciones internacionales, logística aduanera y comercio exterior",
-  "Servicios complementarios en materia legal, tributaria e impositiva"
-],
-
-      "images": {
-        "enabled": false,
-        "autoplay": true,
-        "interval": 5000,
-        "fade": true,
-        "dots": true,
-        "items": []
-      },
-      "quote": {
-        "enabled": true,
-        "text": "\"Nuestros servicios jurídico-fiscales están diseñados para asegurar la correcta observancia de las disposiciones tributarias, mitigar los riesgos derivados del incumplimiento y brindar soporte estratégico en materias como precios de transferencia, reestructuraciones corporativas y fiscalidad internacional.\"",
-        "author": "Pulido Asesores"
-      },
-      "lotties": {
-        "enabled": true,
-        "autoplay": true,
-        "loop": false,
-        "items": [
-          {
-            "path": "./assets/lotties/Establish.json",
-            "label": "Estructuración Corporativa"
-          },
-          {
-            "path": "./assets/lotties/Gavel.json",
-            "label": "Auditoría Legal"
-          },
-          {
-            "path": "./assets/lotties/Submitted.json",
-            "label": "Cumplimiento Fiscal"
-          },
-          {
-            "path": "./assets/lotties/Withdraw.json",
-            "label": "Gestión de Procesos"
-          }
-        ]
-      },
-
-      "map": {
-        "enabled": false
-      },
-      "cta": {
-        "enabled": false,
-        "text": "",
-        "url": ""
       }
     }
   ]
