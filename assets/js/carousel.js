@@ -1,4 +1,12 @@
-document.addEventListener("DOMContentLoaded", () => {
+/* ==========================================
+   PREMIUM CAROUSEL ENGINE (HEADLESS READY)
+   - Autoplay SOLO desktop
+   - Mobile = swipe manual
+   - No conflicto entre múltiples carruseles
+   - Se ejecuta desde app.js después del render
+========================================== */
+
+function initCarousel() {
 
   const carousels = document.querySelectorAll(".carousel");
 
@@ -6,23 +14,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const track = carousel.querySelector(".carousel-track");
     const slides = carousel.querySelectorAll(".carousel-slide");
-    const dotsContainer = carousel.querySelector(".carousel-dots");
 
-    if (!track || slides.length === 0 || !dotsContainer) return;
+    if (!track || slides.length <= 1) return;
+
+    /* ===============================
+       CREAR DOTS SI NO EXISTEN
+    =============================== */
+
+    let dotsContainer = carousel.querySelector(".carousel-dots");
+
+    if (!dotsContainer) {
+      dotsContainer = document.createElement("div");
+      dotsContainer.className = "carousel-dots";
+      carousel.appendChild(dotsContainer);
+    }
+
+    dotsContainer.innerHTML = "";
 
     let index = 0;
     const total = slides.length;
     let interval = null;
-    const isDesktop = window.innerWidth > 768;
-
-    /* =========================
-       CREAR DOTS DINÁMICAMENTE
-    ========================== */
-    dotsContainer.innerHTML = "";
 
     slides.forEach((_, i) => {
       const dot = document.createElement("div");
-      dot.classList.add("carousel-dot");
+      dot.className = "carousel-dot";
       if (i === 0) dot.classList.add("active");
 
       dot.addEventListener("click", () => {
@@ -35,9 +50,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dots = dotsContainer.querySelectorAll(".carousel-dot");
 
-    /* =========================
-       UPDATE
-    ========================== */
+    /* ===============================
+       UPDATE FUNCTION
+    =============================== */
+
     function update() {
       track.style.transform = `translateX(-${index * 100}%)`;
 
@@ -45,11 +61,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (dots[index]) dots[index].classList.add("active");
     }
 
-    /* =========================
-       AUTOPLAY SOLO DESKTOP
-    ========================== */
+    /* ===============================
+       DESKTOP AUTOPLAY ONLY
+    =============================== */
+
+    function isDesktop() {
+      return window.matchMedia("(min-width: 769px)").matches;
+    }
+
     function startAutoplay() {
-      if (!isDesktop) return;
+      if (!isDesktop()) return;
       if (interval) return;
 
       interval = setInterval(() => {
@@ -63,9 +84,11 @@ document.addEventListener("DOMContentLoaded", () => {
       interval = null;
     }
 
-    /* =========================
+    /* ===============================
        INTERSECTION OBSERVER
-    ========================== */
+       (detiene autoplay si no está visible)
+    =============================== */
+
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -78,22 +101,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     observer.observe(carousel);
 
-    /* =========================
-       MOBILE TOUCH SWIPE
-    ========================== */
+    /* ===============================
+       MOBILE SWIPE
+    =============================== */
+
     let startX = 0;
-    let endX = 0;
 
-    track.addEventListener("touchstart", e => {
+    carousel.addEventListener("touchstart", e => {
       startX = e.touches[0].clientX;
-    });
+    }, { passive: true });
 
-    track.addEventListener("touchend", e => {
-      endX = e.changedTouches[0].clientX;
-      handleSwipe();
-    });
+    carousel.addEventListener("touchend", e => {
 
-    function handleSwipe() {
+      const endX = e.changedTouches[0].clientX;
       const diff = startX - endX;
 
       if (Math.abs(diff) > 50) {
@@ -104,8 +124,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         update();
       }
-    }
+
+    }, { passive: true });
+
+    /* ===============================
+       INIT
+    =============================== */
+
+    update();
+    startAutoplay();
 
   });
 
-});
+}
