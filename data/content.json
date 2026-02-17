@@ -52,44 +52,6 @@
       "cta": {
         "enabled": false
       }
-    },
-    {
-      "enabled": true,
-      "id": "auditoria",
-      "type": "services",
-      "title": "CONSULTORÍA CONTABLE Y FISCAL",
-      "text": "Análisis financiero y optimización de carga fiscal. Homologación de criterios contables y reducción de riesgos financieros. Asesoría en requerimientos enviados por parte del SAT, IMSS e INFONAVIT. Redacción y presentación de oficios para vigilancias profundas, cartas invitación, entre otros.",
-      "images": {
-        "enabled": true,
-        "autoplay": true,
-        "interval": 5000,
-        "fade": true,
-        "dots": true,
-        "items": [
-          "./assets/images/auditoria1.webp",
-          "./assets/images/auditoria2.webp",
-          "./assets/images/auditoria3.webp"
-        ]
-      },
-      "quote": {
-        "enabled": true,
-        "text": "Análisis, control y cercanía para fortalecer decisiones financieras.",
-        "author": ""
-      },
-      "lotties": {
-        "enabled": false,
-        "autoplay": true,
-        "loop": false,
-        "items": []
-      },
-      "map": {
-        "enabled": false
-      },
-      "cta": {
-        "enabled": true,
-        "text": "Descargar Brochure",
-        "url": "https://choochshoot.github.io/brochure-offset/"
-      }
     }
   ]
 }
