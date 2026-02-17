@@ -1,124 +1,128 @@
-/* ===================================
-   CAROUSEL ENGINE PREMIUM
-=================================== */
+function initCarousel() {
 
-function initCarousel(carousel) {
+  const carousels = document.querySelectorAll(".carousel");
 
-  const track = carousel.querySelector(".carousel-track");
-  const slides = Array.from(track.children);
+  if (!carousels.length) return;
 
-  let index = 0;
-  const total = slides.length;
+  carousels.forEach(carousel => {
 
-  if (total <= 1) return;
+    const track = carousel.querySelector(".carousel-track");
+    const slides = carousel.querySelectorAll(".carousel-slide");
 
-  /* ===================================
-     CREATE DOTS
-  ==================================== */
+    // 🔒 Protección absoluta
+    if (!track || !slides.length) return;
 
-  const dotsContainer = document.createElement("div");
-  dotsContainer.className = "carousel-dots";
+    let index = 0;
+    const total = slides.length;
+    let interval = null;
 
-  let dots = [];
+    /* ==============================
+       CREAR DOTS
+    ============================== */
 
-  slides.forEach((_, i) => {
-    const dot = document.createElement("div");
-    dot.className = "carousel-dot";
-    if (i === 0) dot.classList.add("active");
+    let dotsContainer = carousel.querySelector(".carousel-dots");
 
-    dot.addEventListener("click", () => {
-      index = i;
-      update();
-    });
-
-    dotsContainer.appendChild(dot);
-    dots.push(dot);
-  });
-
-  carousel.appendChild(dotsContainer);
-
-  /* ===================================
-     UPDATE FUNCTION (GPU OPTIMIZED)
-  ==================================== */
-
-  function update() {
-    if (index >= total) index = 0;
-    if (index < 0) index = total - 1;
-
-    requestAnimationFrame(() => {
-      track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
-    });
-
-    dots.forEach(d => d.classList.remove("active"));
-    if (dots[index]) dots[index].classList.add("active");
-  }
-
-  /* ===================================
-     SWIPE SUPPORT (MOBILE PREMIUM)
-  ==================================== */
-
-  let startX = 0;
-  let endX = 0;
-
-  track.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-  });
-
-  track.addEventListener("touchmove", (e) => {
-    endX = e.touches[0].clientX;
-  });
-
-  track.addEventListener("touchend", () => {
-    const diff = startX - endX;
-
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        index = (index + 1) % total;
-      } else {
-        index = (index - 1 + total) % total;
-      }
-      update();
+    if (!dotsContainer) {
+      dotsContainer = document.createElement("div");
+      dotsContainer.className = "carousel-dots";
+      carousel.appendChild(dotsContainer);
     }
-  });
 
-  /* ===================================
-     AUTOPLAY WITH VISIBILITY CONTROL
-  ==================================== */
+    dotsContainer.innerHTML = "";
 
-  let interval = null;
+    slides.forEach((_, i) => {
+      const dot = document.createElement("div");
+      dot.className = "carousel-dot";
+      if (i === 0) dot.classList.add("active");
 
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
+      dot.addEventListener("click", () => {
+        index = i;
+        update();
+      });
 
-      // Stop if not visible
-      if (!entry.isIntersecting) {
-        if (interval) {
-          clearInterval(interval);
-          interval = null;
-        }
-      }
-
-      // Start if visible and desktop
-      else if (window.innerWidth > 768 && !interval) {
-        interval = setInterval(() => {
-          index = (index + 1) % total;
-          update();
-        }, 4000);
-      }
-
+      dotsContainer.appendChild(dot);
     });
-  }, { threshold: 0.3 });
 
-  observer.observe(carousel);
-}
+    const dots = dotsContainer.querySelectorAll(".carousel-dot");
 
+    /* ==============================
+       UPDATE
+    ============================== */
 
-/* ===================================
-   INIT ALL CAROUSELS
-=================================== */
+    function update() {
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".carousel").forEach(carousel => {
-    initCarousel(carousel);
+      if (index >= total) index = 0;
+      if (index < 0) index = total - 1;
+
+      track.style.transform = `translateX(-${index * 100}%)`;
+
+      dots.forEach(d => d.classList.remove("active"));
+      if (dots[index]) dots[index].classList.add("active");
+    }
+
+    /* ==============================
+       AUTOPLAY DESKTOP ONLY
+    ============================== */
+
+    function startAuto() {
+      if (window.innerWidth <= 768) return;
+
+      interval = setInterval(() => {
+        index = (index + 1) % total;
+        update();
+      }, 4000);
+    }
+
+    function stopAuto() {
+      if (interval) clearInterval(interval);
+    }
+
+    /* ==============================
+       INTERSECTION OBSERVER
+       (NO MÁS SALTO EN MOBILE)
+    ============================== */
+
+    const observer = new IntersectionObserver(entries => {
+
+      entries.forEach(entry => {
+
+        if (!entry.isIntersecting) {
+          stopAuto();
+        } else {
+          stopAuto();
+          startAuto();
+        }
+
+      });
+
+    }, { threshold: .4 });
+
+    observer.observe(carousel);
+
+    /* ==============================
+       SWIPE MOBILE
+    ============================== */
+
+    let startX = 0;
+
+    carousel.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+      stopAuto();
+    });
+
+    carousel.addEventListener("touchend", e => {
+      const endX = e.changedTouches[0].clientX;
+      const diff = startX - endX;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) index++;
+        else index--;
+        update();
+      }
+
+      startAuto();
+    });
+
   });
-});
+
+}
