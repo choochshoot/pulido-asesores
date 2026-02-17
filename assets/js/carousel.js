@@ -60,10 +60,17 @@ function initCarousel() {
        AUTOPLAY
     ============================== */
 
-    let interval = setInterval(() => {
-      index = (index + 1) % total;
-      update();
-    }, 4000);
+    let interval = null;
+
+    // Solo autoplay en desktop
+    if (window.innerWidth > 768) {
+      interval = setInterval(() => {
+        index = (index + 1) % total;
+        update();
+      }, 4000);
+    }
+
+    
 
     /* ==============================
        PAUSE ON HOVER (desktop premium UX)
