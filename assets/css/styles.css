@@ -184,10 +184,11 @@ section{
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:10px;
-  margin-top:18px;
+  gap:12px;
+  margin-top:20px;
   position:relative;
   z-index:10;
+  width:100%;
 }
 
 .carousel-dot{
@@ -201,9 +202,17 @@ section{
 
 .carousel-dot.active{
   background:var(--accent);
-  transform:scale(1.3);
-  box-shadow:0 0 8px rgba(42,125,225,.6);
+  transform:scale(1.4);
+  box-shadow:0 0 10px rgba(42,125,225,.6);
 }
+
+/* Mobile spacing fix */
+@media(max-width:768px){
+  .carousel-dots{
+    margin-top:16px;
+  }
+}
+
 
 
 /* ===================================
