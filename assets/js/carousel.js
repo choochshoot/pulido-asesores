@@ -74,7 +74,10 @@ function initCarousel() {
       if (index >= total) index = 0;
       if (index < 0) index = total - 1;
 
-      track.style.transform = `translateX(-${index * 100}%)`;
+      requestAnimationFrame(() => {
+        track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+      });
+
 
       dots.forEach(d => d.classList.remove("active"));
       if (dots[index]) dots[index].classList.add("active");
