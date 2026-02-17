@@ -1,12 +1,4 @@
-/* ==========================================
-   PREMIUM CAROUSEL ENGINE
-   - Autoplay SOLO desktop
-   - Mobile = SOLO swipe manual
-   - No conflictos entre múltiples carruseles
-   - No salto de scroll
-========================================== */
-
-function initCarousel() {
+document.addEventListener("DOMContentLoaded", () => {
 
   const carousels = document.querySelectorAll(".carousel");
 
@@ -14,26 +6,23 @@ function initCarousel() {
 
     const track = carousel.querySelector(".carousel-track");
     const slides = carousel.querySelectorAll(".carousel-slide");
+    const dotsContainer = carousel.querySelector(".carousel-dots");
 
-    if (!track || slides.length <= 1) return;
+    if (!track || slides.length === 0 || !dotsContainer) return;
 
-    /* =====================
-       CREAR DOTS
-    ===================== */
+    let index = 0;
+    const total = slides.length;
+    let interval = null;
+    const isDesktop = window.innerWidth > 768;
 
-    let dotsContainer = carousel.querySelector(".carousel-dots");
-
-    if (!dotsContainer) {
-      dotsContainer = document.createElement("div");
-      dotsContainer.className = "carousel-dots";
-      carousel.appendChild(dotsContainer);
-    }
-
+    /* =========================
+       CREAR DOTS DINÁMICAMENTE
+    ========================== */
     dotsContainer.innerHTML = "";
 
     slides.forEach((_, i) => {
       const dot = document.createElement("div");
-      dot.className = "carousel-dot";
+      dot.classList.add("carousel-dot");
       if (i === 0) dot.classList.add("active");
 
       dot.addEventListener("click", () => {
@@ -46,20 +35,9 @@ function initCarousel() {
 
     const dots = dotsContainer.querySelectorAll(".carousel-dot");
 
-    /* =====================
-       STATE
-    ===================== */
-
-    let index = 0;
-    let interval = null;
-    const total = slides.length;
-
-    const isDesktop = window.innerWidth > 768;
-
-    /* =====================
+    /* =========================
        UPDATE
-    ===================== */
-
+    ========================== */
     function update() {
       track.style.transform = `translateX(-${index * 100}%)`;
 
@@ -67,53 +45,55 @@ function initCarousel() {
       if (dots[index]) dots[index].classList.add("active");
     }
 
-    /* =====================
+    /* =========================
        AUTOPLAY SOLO DESKTOP
-    ===================== */
+    ========================== */
+    function startAutoplay() {
+      if (!isDesktop) return;
+      if (interval) return;
 
-    if (isDesktop) {
-
-      function startAutoplay() {
-        if (interval) return;
-
-        interval = setInterval(() => {
-          index = (index + 1) % total;
-          update();
-        }, 4000);
-      }
-
-      function stopAutoplay() {
-        clearInterval(interval);
-        interval = null;
-      }
-
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            startAutoplay();
-          } else {
-            stopAutoplay();
-          }
-        });
-      }, { threshold: 0.4 });
-
-      observer.observe(carousel);
+      interval = setInterval(() => {
+        index = (index + 1) % total;
+        update();
+      }, 4000);
     }
 
-    /* =====================
-       SWIPE MOBILE
-    ===================== */
+    function stopAutoplay() {
+      clearInterval(interval);
+      interval = null;
+    }
 
+    /* =========================
+       INTERSECTION OBSERVER
+    ========================== */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          startAutoplay();
+        } else {
+          stopAutoplay();
+        }
+      });
+    }, { threshold: 0.4 });
+
+    observer.observe(carousel);
+
+    /* =========================
+       MOBILE TOUCH SWIPE
+    ========================== */
     let startX = 0;
     let endX = 0;
 
-    carousel.addEventListener("touchstart", e => {
+    track.addEventListener("touchstart", e => {
       startX = e.touches[0].clientX;
-    }, { passive: true });
+    });
 
-    carousel.addEventListener("touchend", e => {
-
+    track.addEventListener("touchend", e => {
       endX = e.changedTouches[0].clientX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
       const diff = startX - endX;
 
       if (Math.abs(diff) > 50) {
@@ -124,9 +104,8 @@ function initCarousel() {
         }
         update();
       }
-
-    }, { passive: true });
+    }
 
   });
 
-}
+});
