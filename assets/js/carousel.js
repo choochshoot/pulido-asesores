@@ -11,6 +11,30 @@ function initCarousel() {
     carousel.dataset.initialized = "true";
 
     const track = carousel.querySelector(".carousel-track");
+    let startX = 0;
+    let endX = 0;
+
+    track.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    track.addEventListener("touchmove", (e) => {
+      endX = e.touches[0].clientX;
+    });
+
+    track.addEventListener("touchend", () => {
+      const diff = startX - endX;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          index = (index + 1) % total; // swipe left
+        } else {
+          index = (index - 1 + total) % total; // swipe right
+        }
+        update();
+      }
+    });
+
     const slides = carousel.querySelectorAll(".carousel-slide");
 
     if (!track || slides.length <= 1) return;
