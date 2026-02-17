@@ -1,119 +1,124 @@
 /* ===================================
-   CAROUSEL ENGINE (MULTI INSTANCE SAFE)
+   CAROUSEL ENGINE PREMIUM
 =================================== */
 
-function initCarousel() {
+function initCarousel(carousel) {
 
-  document.querySelectorAll(".carousel").forEach(carousel => {
+  const track = carousel.querySelector(".carousel-track");
+  const slides = Array.from(track.children);
 
-    // Evita inicializar dos veces el mismo carrusel
-    if (carousel.dataset.initialized === "true") return;
-    carousel.dataset.initialized = "true";
+  let index = 0;
+  const total = slides.length;
 
-    const track = carousel.querySelector(".carousel-track");
-    let startX = 0;
-    let endX = 0;
+  if (total <= 1) return;
 
-    track.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
+  /* ===================================
+     CREATE DOTS
+  ==================================== */
+
+  const dotsContainer = document.createElement("div");
+  dotsContainer.className = "carousel-dots";
+
+  let dots = [];
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.className = "carousel-dot";
+    if (i === 0) dot.classList.add("active");
+
+    dot.addEventListener("click", () => {
+      index = i;
+      update();
     });
 
-    track.addEventListener("touchmove", (e) => {
-      endX = e.touches[0].clientX;
-    });
-
-    track.addEventListener("touchend", () => {
-      const diff = startX - endX;
-
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          index = (index + 1) % total; // swipe left
-        } else {
-          index = (index - 1 + total) % total; // swipe right
-        }
-        update();
-      }
-    });
-
-    const slides = carousel.querySelectorAll(".carousel-slide");
-
-    if (!track || slides.length <= 1) return;
-
-    let index = 0;
-    const total = slides.length;
-
-    /* ==============================
-       CREAR DOTS
-    ============================== */
-
-    const dotsContainer = document.createElement("div");
-    dotsContainer.className = "carousel-dots";
-
-    slides.forEach((_, i) => {
-      const dot = document.createElement("div");
-      dot.className = "carousel-dot";
-      if (i === 0) dot.classList.add("active");
-
-      dot.addEventListener("click", () => {
-        index = i;
-        update();
-      });
-
-      dotsContainer.appendChild(dot);
-    });
-
-    carousel.appendChild(dotsContainer);
-    const dots = dotsContainer.querySelectorAll(".carousel-dot");
-
-    /* ==============================
-       UPDATE
-    ============================== */
-
-    function update() {
-      // Protección extra
-      if (index >= total) index = 0;
-      if (index < 0) index = total - 1;
-
-      requestAnimationFrame(() => {
-        track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
-      });
-
-
-      dots.forEach(d => d.classList.remove("active"));
-      if (dots[index]) dots[index].classList.add("active");
-    }
-
-    /* ==============================
-       AUTOPLAY
-    ============================== */
-
-    let interval = null;
-
-    // Solo autoplay en desktop
-    if (window.innerWidth > 768) {
-      interval = setInterval(() => {
-        index = (index + 1) % total;
-        update();
-      }, 4000);
-    }
-
-    
-
-    /* ==============================
-       PAUSE ON HOVER (desktop premium UX)
-    ============================== */
-
-    carousel.addEventListener("mouseenter", () => {
-      clearInterval(interval);
-    });
-
-    carousel.addEventListener("mouseleave", () => {
-      interval = setInterval(() => {
-        index = (index + 1) % total;
-        update();
-      }, 4000);
-    });
-
+    dotsContainer.appendChild(dot);
+    dots.push(dot);
   });
 
+  carousel.appendChild(dotsContainer);
+
+  /* ===================================
+     UPDATE FUNCTION (GPU OPTIMIZED)
+  ==================================== */
+
+  function update() {
+    if (index >= total) index = 0;
+    if (index < 0) index = total - 1;
+
+    requestAnimationFrame(() => {
+      track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+    });
+
+    dots.forEach(d => d.classList.remove("active"));
+    if (dots[index]) dots[index].classList.add("active");
+  }
+
+  /* ===================================
+     SWIPE SUPPORT (MOBILE PREMIUM)
+  ==================================== */
+
+  let startX = 0;
+  let endX = 0;
+
+  track.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  track.addEventListener("touchmove", (e) => {
+    endX = e.touches[0].clientX;
+  });
+
+  track.addEventListener("touchend", () => {
+    const diff = startX - endX;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        index = (index + 1) % total;
+      } else {
+        index = (index - 1 + total) % total;
+      }
+      update();
+    }
+  });
+
+  /* ===================================
+     AUTOPLAY WITH VISIBILITY CONTROL
+  ==================================== */
+
+  let interval = null;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+
+      // Stop if not visible
+      if (!entry.isIntersecting) {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+      }
+
+      // Start if visible and desktop
+      else if (window.innerWidth > 768 && !interval) {
+        interval = setInterval(() => {
+          index = (index + 1) % total;
+          update();
+        }, 4000);
+      }
+
+    });
+  }, { threshold: 0.3 });
+
+  observer.observe(carousel);
 }
+
+
+/* ===================================
+   INIT ALL CAROUSELS
+=================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".carousel").forEach(carousel => {
+    initCarousel(carousel);
+  });
+});
