@@ -124,23 +124,20 @@ function renderSections(sections, contact) {
       contentHTML = `<p>${safeGet(section,"text")}</p>`;
     }
 
-    // 🔹 Imágenes / Carrusel
-    let imagesHTML = "";
+    // 🔹 Imagen estática premium
+    let imageHTML = "";
 
     if (section.images?.enabled && section.images.items?.length) {
 
-      imagesHTML = `
-        <div class="carousel">
-          <div class="carousel-track">
-            ${section.images.items.map(img => `
-              <div class="carousel-slide">
-                <img src="${img}" loading="lazy" alt="">
-              </div>
-            `).join("")}
-          </div>
+      imageHTML = `
+        <div class="section-image">
+          <img src="${section.images.items[0]}"
+              alt="${safeGet(section,"title")}"
+              loading="lazy">
         </div>
       `;
     }
+
 
     // 🔹 Lotties
 let lottiesHTML = "";
@@ -197,7 +194,7 @@ if (section.lotties?.enabled && section.lotties.items?.length) {
     sectionEl.innerHTML = `
       <h2>${safeGet(section,"title")}</h2>
       ${contentHTML}
-      ${imagesHTML}
+      ${imageHTML}
       ${lottiesHTML}
       ${quoteHTML}
       ${mapHTML}
